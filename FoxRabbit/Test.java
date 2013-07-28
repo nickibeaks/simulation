@@ -27,38 +27,46 @@ public class Test
      */
     public static void main(String args[])
     {                             
-        // pre-simulation set-up
+        // pre-simulation set-up*************************************************************************************************************************************************************************************
+    	
     	// generate board
         Random randomNum = new Random(); // random number generator for general use across simulation
         Scanner input = new Scanner(System.in); // user input for step forward in simulation
         int totalRows = 20; // number of rows on game board
         int totalColumns = 20; // number of columns on game board
-        String[][] board = new String[totalRows][totalColumns]; // build the game board
+        int numSteps = 20; // number of steps to go into the simulation before stopping
+        String[][] board = new String[totalRows][totalColumns]; // prepare the empty game board
+        ArrayList<Rabbit> rabbits = new ArrayList<Rabbit>(); // storage for rabbits in the system
+        ArrayList<Fox> foxes = new ArrayList<Fox>(); // storage for foxes in the system     
+        
         
         // generate rabbits
-        ArrayList<Rabbit> rabbits = new ArrayList<Rabbit>(); // create an ArrayList to store Rabbits        
-        for(int i = 0; i <= 4+randomNum.nextInt(4); i++) // for a random number of times between 1 and 10
+        // randomly generate 1 to 10 rabbits
+        for(int i = 0; i <= 4+randomNum.nextInt(4); i++)
         {
             rabbits.add(new Rabbit("R"+i)); // build a new rabbit
             rabbits.get(i).setID(i); // set this rabbits ID
         }        
-        // place rabbits randomly around gameboard
-        for(int i = 0; i < rabbits.size(); i++) // for the number of rabbits in the game, place them randomly around the game board
+        
+        // give rabbits' random game board co-ords
+        for(int i = 0; i < rabbits.size(); i++) // for the number of rabbits in the system, give them all random game board co-ords
         {
             int row = randomNum.nextInt(totalRows); // random row
             int column = randomNum.nextInt(totalColumns); // random column
             rabbits.get(i).setRow(row); // store this rabbit's row in it's attributes
             rabbits.get(i).setColumn(column); // store this rabbit's column in it's attributes            
         }
-
+        
+        
         // generate foxes
-        ArrayList<Fox> foxes = new ArrayList<Fox>(); // create an ArrayList to store Foxes        
-        for(int i = 0; i < 1; i++) // for a random number of times
+        // randomly generate a number of foxes (currently set to 1 fox for testing puposes)
+        for(int i = 0; i < 1; i++)
         {
             foxes.add(new Fox(" F"+i+" ")); // build a new fox
             foxes.get(i).setID(i); // set this foxes ID
         }
-        // place foxes randomly around gameboard
+        
+        // give foxes rabdom game board co-ords
         for(int i = 0; i < foxes.size(); i++) // for the number of foxes in the game, place them randomly around the game board
         {
             int row = randomNum.nextInt(totalRows); // generate a random number between 0 and number of rows
@@ -69,11 +77,11 @@ public class Test
         
         
         
-        // simulation start
-        int numSteps = 5; // number of steps to go into the simulation before stopping
+        // simulation start******************************************************************************************************************************************************************************************
+        
         for(int step = 0; step < numSteps; step++)
         {
-            // clear board
+            // set up empty game board
             for(int i = 0; i < board.length; i++)
             {
                 for(int j = 0; j < board[0].length; j++)
@@ -82,17 +90,23 @@ public class Test
                 }
             }
             
-            // set up foxes on game board
+            // place foxes on game board using their stored co-ord attributes
             for(int i = 0; i < foxes.size(); i++)
             {
-                board[foxes.get(i).getRow()][foxes.get(i).getColumn()] = foxes.get(i).getName(); // place foxes on game board
+                board[foxes.get(i).getRow()][foxes.get(i).getColumn()] = foxes.get(i).getName(); // place fox on game board
             }
-            // set up rabbits on game board
+            // place rabbits on game board using their stored co-ord attributes
             for(int i = 0; i < rabbits.size(); i++)
             {
-                board[rabbits.get(i).getRow()][rabbits.get(i).getColumn()] = rabbits.get(i).getName(); // place rabbits on game board
+                board[rabbits.get(i).getRow()][rabbits.get(i).getColumn()] = rabbits.get(i).getName(); // place rabbit on game board
             }
-             
+            
+            System.out.println("\nStep: "+(step+1));
+            
+            // press enter to initiate simulation step                            
+            System.out.println("\nPress enter to print the game board for step "+(step+1)+": "); // Ask user to press enter to move to next round
+            input.nextLine();
+            
             // print out game board
             for(int i = 0; i < board.length; i++) // for the number of rows on the game board
             {
@@ -104,52 +118,52 @@ public class Test
                     }
                     else if(board[i][j].length() == 1)
                     {
-                        System.out.print("|   "+board[i][j]+"  |"); // print object
+                        System.out.print("|   "+board[i][j]+"  |"); // if object with name consisting of 1 character is present, print this string
                     }
                     else if(board[i][j].length() == 2)
                     {
-                        System.out.print("|  "+board[i][j]+"  |"); // print object
+                        System.out.print("|  "+board[i][j]+"  |"); // if object with name consisting of 2 characters is present, print this string
                     }
                     else if(board[i][j].length() == 3)
                     {
-                        System.out.print("|  "+board[i][j]+" |"); // print object
+                        System.out.print("|  "+board[i][j]+" |"); // if object with name consisting of 3 characters is present, print this string
                     }
                     else if(board[i][j].length() == 4)
                     {
-                        System.out.print("| "+board[i][j]+" |"); // print object
+                        System.out.print("| "+board[i][j]+" |"); // if object with name consisting of 4 characters is present, print this string
                     }
                 }
                 System.out.println();                
             }
             
-            // press enter to initiate simulation step                
-            
-            System.out.println("Press enter to continue: "); // Ask user to press enter to move to next round
+            // press enter to initiate simulation step                            
+            System.out.println("\nPress enter to see the info for step "+(step+1)+": "); // Ask user to press enter to move to next round
             input.nextLine();
             
             // pre-step set-up
-            // set up the fox variables for this step
-            boolean hunt = false; // variable to decide wether fox will hunt or not, set to false by default
+            // set up the fox variables storage for this step
+            boolean hunt = false; // variable to decide wether fox will hunt or not, set to true when fox has a rabbit in sight
             String foxName; // fox name
             int foxID = 0; // fox ID
             int foxRow = 0; // fox row
             int foxColumn = 0; // fox column
             int foxSight = 0; // fox sight
-            ArrayList<Rabbit> rabbitsInSight = new ArrayList<Rabbit>(); // memory for rabbits within sight
-            ArrayList<Rabbit> closestRabbit = new ArrayList<Rabbit>(); // memory for closest rabbit
+            ArrayList<Rabbit> rabbitsInSight = new ArrayList<Rabbit>(); // fox memory for rabbits within sight
+            ArrayList<Rabbit> closestRabbit = new ArrayList<Rabbit>(); // fox memory for closest rabbit
             int closestDistance = 0;
       
-            // set up the rabbits' variables for this step 
+            // set up the rabbits' variables storage for this step
             String rabbitName; // rabbit name
             int rabbitID = 0; // rabbit ID
             int rabbitRow = 0; // rabbit row
             int rabbitColumn = 0; // rabbit column
-            int rowDistance = 0; // rows rabbit is from fox
-            int columnDistance = 0; // columns rabbit is from fox
+            int rowDistance = 0; // number of rows rabbit is from fox
+            int columnDistance = 0; // number of columns rabbit is from fox
             int totalDistance = 0; // total distance rabbit is from fox
             // closest rabbit's variables
             int closestRabbitID = 0;
             
+            // fox will begin looking for rabbits
             for(int foxCount = 0; foxCount < foxes.size(); foxCount++) // for all foxes, have fox search for rabbits
             {
                 // current fox
@@ -158,12 +172,13 @@ public class Test
                 foxRow = foxes.get(foxCount).getRow(); // fox row
                 foxColumn = foxes.get(foxCount).getColumn(); // fox column
                 foxSight = foxes.get(foxCount).getSight()/10; // fox sight
-                closestDistance = (foxSight*2)+1;
+                closestDistance = (foxSight*2)+1; // closest rabbit distance
 
                 
                 System.out.println("Fox Sight: "+foxSight); // print foxes sight attribute value
                 
-                // current fox look for rabbits
+                // hunt set-up
+                // go through all rabbits to find any rabbits within seeing distance of this fox
                 for(int rabbitCount = 0; rabbitCount < rabbits.size(); rabbitCount++) // for all rabbits
                 {
                     // current rabbit
@@ -183,21 +198,22 @@ public class Test
                         System.out.println("Fox sees "+rabbitName);
                     }
                     
-                    // details on current rabbit's position relative to current fox
+                    // print info on current rabbit's position relative to current fox
                     System.out.println(rabbitName+" is "+rowDistance+" rows and "+columnDistance+" columns from the fox"); // print the relative co-ordinate distance of the rabbit from the fox
                     
                     // check for closest rabbit
                     if(totalDistance < closestDistance) // if this rabbit is currently the closest rabbit to the fox
 	                {
 	                	closestRabbit.add(rabbits.get(rabbitCount)); // store this rabbit as the closest rabbit in the foxes memory
-	                	closestDistance = totalDistance; // update the closest rabbit distance tracker with the new rabbits distance
-	                	closestRabbitID = rabbitID;
+	                	closestDistance = totalDistance; // update the closest rabbit distance tracker with this rabbit's distance from fox
+	                	closestRabbitID = rabbitID; // update the closest rabbit ID with this rabbit's ID
 	                }
                     
-               	}       
-                
+               	}
+                // finish hunt set-up                
         	}
             
+            // print info about this foxes hunt set-up
             System.out.println("Fox sees "+rabbitsInSight.size()+" rabbits"); // print the number of rabbits within the foxes sight range
             if(rabbitsInSight.size() > 0) // if there are any rabbits witin the foxes sight range
             {
@@ -205,6 +221,7 @@ public class Test
                 hunt = true;
             }
             
+            // hunt
             if(hunt == true)
             {
             	// closest rabbit info
@@ -245,6 +262,7 @@ public class Test
                 	rabbits.remove(closestRabbitID);
                 }
             }
+            // finish hunt
             
             
             

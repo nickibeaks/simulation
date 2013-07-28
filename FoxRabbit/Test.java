@@ -240,7 +240,7 @@ public class Test
                 foxes.get(foxID).setColumn(foxColumn);
                 
                 // if the fox reaches a cell with a rabbit on it, fox kills the rabbit
-                if(foxes.get(foxID).getRow == closestRabbitRow && foxes.get(foxID).getColumn == closestRabbitColumn)
+                if(foxes.get(foxID).getRow() == closestRabbitRow && foxes.get(foxID).getColumn() == closestRabbitColumn)
                 {
                 	rabbits.remove(closestRabbitID);
                 }

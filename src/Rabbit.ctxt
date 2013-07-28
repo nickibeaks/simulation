@@ -1,0 +1,14 @@
+#BlueJ class context
+comment0.params=
+comment0.target=Rabbit()
+comment0.text=\r\n\ Constructor\ for\ objects\ of\ class\ Rabbit\r\n
+comment1.params=newName
+comment1.target=Rabbit(java.lang.String)
+comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ Rabbit\r\n
+comment2.params=
+comment2.target=int\ getRabbitID()
+comment2.text=\r\n\ Get\ rabbit\ ID\r\n\ \r\n\ @param\r\n\ @return\ int\r\n
+comment3.params=
+comment3.target=int\ getNumRabbits()
+comment3.text=\r\n\ Get\ the\ number\ of\ rabbits\ in\ the\ scene\r\n\ \r\n\ @param\r\n\ @return\ int\r\n
+numComments=4

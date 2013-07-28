@@ -34,8 +34,8 @@ public class Test
         Scanner input = new Scanner(System.in); // user input for step forward in simulation
         int totalRows = 20; // number of rows on game board
         int totalColumns = 20; // number of columns on game board
-        int numSteps = 20; // number of steps to go into the simulation before stopping
-        String[][] board = new String[totalRows][totalColumns]; // prepare the empty game board
+        int numSteps = 5; // number of steps to go into the simulation before stopping
+        Animal[][] board = new Animal[totalRows][totalColumns]; // prepare the empty game board
         ArrayList<Rabbit> rabbits = new ArrayList<Rabbit>(); // storage for rabbits in the system
         ArrayList<Fox> foxes = new ArrayList<Fox>(); // storage for foxes in the system     
         
@@ -62,7 +62,7 @@ public class Test
         // randomly generate a number of foxes (currently set to 1 fox for testing puposes)
         for(int i = 0; i < 1; i++)
         {
-            foxes.add(new Fox("F"+i+" ")); // build a new fox
+            foxes.add(new Fox("F"+i)); // build a new fox
             foxes.get(i).setID(i); // set this foxes ID
         }
         
@@ -93,12 +93,12 @@ public class Test
             // place foxes on game board using their stored co-ord attributes
             for(int i = 0; i < foxes.size(); i++)
             {
-                board[foxes.get(i).getRow()][foxes.get(i).getColumn()] = foxes.get(i).getName(); // place fox on game board
+                board[foxes.get(i).getRow()][foxes.get(i).getColumn()] = foxes.get(i); // place fox on game board
             }
             // place rabbits on game board using their stored co-ord attributes
             for(int i = 0; i < rabbits.size(); i++)
             {
-                board[rabbits.get(i).getRow()][rabbits.get(i).getColumn()] = rabbits.get(i).getName(); // place rabbit on game board
+                board[rabbits.get(i).getRow()][rabbits.get(i).getColumn()] = rabbits.get(i); // place rabbit on game board
             }
             
             System.out.println("\nStep: "+(step+1));
@@ -116,21 +116,9 @@ public class Test
                     {
                         System.out.print("|      |"); // print blank space if no object is present
                     }
-                    else if(board[i][j].length() == 1)
+                    else
                     {
-                        System.out.print("|   "+board[i][j]+"  |"); // if object with name consisting of 1 character is present, print this string
-                    }
-                    else if(board[i][j].length() == 2)
-                    {
-                        System.out.print("|  "+board[i][j]+"  |"); // if object with name consisting of 2 characters is present, print this string
-                    }
-                    else if(board[i][j].length() == 3)
-                    {
-                        System.out.print("|  "+board[i][j]+" |"); // if object with name consisting of 3 characters is present, print this string
-                    }
-                    else if(board[i][j].length() == 4)
-                    {
-                        System.out.print("| "+board[i][j]+" |"); // if object with name consisting of 4 characters is present, print this string
+                        System.out.print("|  "+board[i][j].getName()+"  |"); // if object with name consisting of 1 character is present, print this string
                     }
                 }
                 System.out.println();                

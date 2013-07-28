@@ -62,7 +62,7 @@ public class Test
         // randomly generate a number of foxes (currently set to 1 fox for testing puposes)
         for(int i = 0; i < 1; i++)
         {
-            foxes.add(new Fox(" F"+i+" ")); // build a new fox
+            foxes.add(new Fox("F"+i+" ")); // build a new fox
             foxes.get(i).setID(i); // set this foxes ID
         }
         

@@ -41,7 +41,7 @@ public class Test
         
         
         // generate rabbits
-        // randomly generate 1 to 10 rabbits
+        // randomly generate 4 to 8 rabbits
         for(int i = 0; i <= 4+randomNum.nextInt(4); i++)
         {
             rabbits.add(new Rabbit("R"+i)); // build a new rabbit
@@ -66,7 +66,7 @@ public class Test
             foxes.get(i).setID(i); // set this foxes ID
         }
         
-        // give foxes rabdom game board co-ords
+        // give foxes random game board co-ords
         for(int i = 0; i < foxes.size(); i++) // for the number of foxes in the game, place them randomly around the game board
         {
             int row = randomNum.nextInt(totalRows); // generate a random number between 0 and number of rows

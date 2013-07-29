@@ -34,7 +34,7 @@ public class Test
         Scanner input = new Scanner(System.in); // user input for step forward in simulation
         int totalRows = 20; // number of rows on game board
         int totalColumns = 20; // number of columns on game board
-        int numSteps = 5; // number of steps to go into the simulation before stopping
+        int numSteps = 30; // number of steps to go into the simulation before stopping
         Animal[][] board = new Animal[totalRows][totalColumns]; // prepare the empty game board
         ArrayList<Rabbit> rabbits = new ArrayList<Rabbit>(); // storage for rabbits in the system
         ArrayList<Fox> foxes = new ArrayList<Fox>(); // storage for foxes in the system     
@@ -131,131 +131,176 @@ public class Test
             // pre-step set-up
             // set up the fox variables storage for this step
             boolean hunt = false; // variable to decide wether fox will hunt or not, set to true when fox has a rabbit in sight
-            String foxName; // fox name
-            int foxID = 0; // fox ID
             int foxRow = 0; // fox row
             int foxColumn = 0; // fox column
             int foxSight = 0; // fox sight
-            ArrayList<Rabbit> rabbitsInSight = new ArrayList<Rabbit>(); // fox memory for rabbits within sight
-            ArrayList<Rabbit> closestRabbit = new ArrayList<Rabbit>(); // fox memory for closest rabbit
+            int foxViewNorth = 0; // number of cells to the north the fox can see
+            int foxViewSouth = 0; // number of cells to the south the fox can see
+            int foxViewEast = 0; // number of cells to the east the fox can see
+            int foxViewWest = 0; // number of cells to the west the fox can see
+            Animal[] rabbitsInSight = new Animal[rabbits.size()]; // fox memory for rabbits within sight
+            int numRabbitsInSight = 0;
+            Animal[] closestRabbit = new Animal[rabbits.size()]; // fox memory for closest rabbit
             int closestDistance = 0;
       
             // set up the rabbits' variables storage for this step
-            String rabbitName; // rabbit name
-            int rabbitID = 0; // rabbit ID
             int rabbitRow = 0; // rabbit row
             int rabbitColumn = 0; // rabbit column
             int rowDistance = 0; // number of rows rabbit is from fox
             int columnDistance = 0; // number of columns rabbit is from fox
             int totalDistance = 0; // total distance rabbit is from fox
-            // closest rabbit's variables
-            int closestRabbitID = 0;
+            
             
             // fox will begin looking for rabbits
             for(int foxCount = 0; foxCount < foxes.size(); foxCount++) // for all foxes, have fox search for rabbits
             {
-                // current fox
-            	foxName = foxes.get(foxCount).getName(); // fox name
-                foxID = foxes.get(foxCount).getID(); // fox ID
+            	// current fox attributes
                 foxRow = foxes.get(foxCount).getRow(); // fox row
                 foxColumn = foxes.get(foxCount).getColumn(); // fox column
                 foxSight = foxes.get(foxCount).getSight()/10; // fox sight
                 closestDistance = (foxSight*2)+1; // closest rabbit distance
+                
+                // calibrate vision radius for this fox
+                foxViewNorth = foxRow - foxSight; 
+                if(foxViewNorth < 0)
+                {
+                	foxViewNorth = 0;
+                }
+                foxViewSouth = foxRow + foxSight;
+                if(foxViewSouth > totalRows-1)
+                {
+                	foxViewSouth = totalRows-1;
+                }
+                foxViewWest = foxColumn - foxSight;
+                if(foxViewWest < 0)
+                {
+                	foxViewWest = 0;
+                }
+                foxViewEast = foxColumn + foxSight;
+                if(foxViewEast > totalColumns-1)
+                {
+                	foxViewEast = totalColumns-1;
+                }
 
                 
                 System.out.println("Fox Sight: "+foxSight); // print foxes sight attribute value
                 
                 // hunt set-up
-                // go through all rabbits to find any rabbits within seeing distance of this fox
-                for(int rabbitCount = 0; rabbitCount < rabbits.size(); rabbitCount++) // for all rabbits
+                // check around foxes vision radius for rabbits
+                for(int i = foxViewNorth; i <= foxViewSouth; i++) // for the foxes vision radius along the rows
                 {
-                    // current rabbit
-                	rabbitName = rabbits.get(rabbitCount).getName(); // rabbit name
-                    rabbitID = rabbits.get(rabbitCount).getID(); // rabbit ID
-                    rabbitRow = rabbits.get(rabbitCount).getRow(); // rabbit row
-                    rabbitColumn = rabbits.get(rabbitCount).getColumn(); // rabbit column
-                    rowDistance = Math.abs(rabbitRow - foxRow); // rows rabbit is from fox
-                    columnDistance = Math.abs(rabbitColumn - foxColumn); // columns rabbit is from fox
-                    totalDistance = Math.abs(rowDistance) + Math.abs(columnDistance); // total distance rabbit is from fox
-                    
-                    // check if rabbit is within sight of this fox
-                    if(rowDistance <= foxSight & columnDistance <= foxSight) // if rabbit is within fox sight
+                    for(int j = foxViewWest; j <= foxViewEast; j++) // for the foxes vision radius along the columns
                     {
-                        // fox sees rabbit
-                        rabbitsInSight.add(rabbits.get(rabbitCount)); // added to fox rabbits in sight memory
-                        System.out.println("Fox sees "+rabbitName);
+                    	if(board[i][j] != null) // if there is something in a cell, check if it's a rabbit
+                    	{
+                    		Class cls = board[i][j].getClass(); // check what type of object is in sight
+                    		
+                    		// rabbit attributes
+                    		rabbitRow = board[i][j].getRow(); // rabbit row
+                            rabbitColumn = board[i][j].getColumn(); // rabbit column
+                            rowDistance = Math.abs(rabbitRow - foxRow); // rows rabbit is from fox
+                            columnDistance = Math.abs(rabbitColumn - foxColumn); // columns rabbit is from fox
+                            totalDistance = Math.abs(rowDistance) + Math.abs(columnDistance); // total distance rabbit is from fox
+                        	
+                        	if(cls.getName() == "Rabbit") 
+                        	{
+                        		rabbitsInSight[numRabbitsInSight] = board[i][j]; // found rabbit within vision radius
+                        		numRabbitsInSight = numRabbitsInSight+1; // increment number of rabbits currently in vision radius by 1
+                        		hunt = true;
+                        		
+                        		// find the closest rabbit to this fox
+                        		if(totalDistance < closestDistance)
+                        		{
+                        			closestRabbit[0] = board[i][j]; // set the closest rabbit into fox memory
+                        			closestDistance = totalDistance; // update the closest distance with this rabbit's distance
+                        		}
+                        	}
+                    	}                	
+                    }
+                }
+                    // finish hunt set-up          
+                    // hunt
+                    if(hunt == true)
+                    {
+                    	// print info about this foxes hunt set-up
+                        // print out info on rabbits within vision radius of this fox            
+                        System.out.print("Rabbits within sight of the fox: ");
+                        for(int count = 0; count < numRabbitsInSight; count++)
+                        {
+                        	System.out.print(rabbitsInSight[count].getName()+", ");
+                        }
+                        
+                        System.out.println();
+                        
+                        // print info on closest rabbit
+                        if(closestRabbit.length > 0)
+                        {
+                        	System.out.println("The closest rabbit to the fox is: "+closestRabbit[0].getName());
+                        }
+                    	
+                    	
+                    	
+                    	// rabbit attributes
+                		rabbitRow = closestRabbit[0].getRow(); // rabbit row
+                        rabbitColumn = closestRabbit[0].getColumn(); // rabbit column
+                        rowDistance = Math.abs(rabbitRow - foxRow); // rows rabbit is from fox
+                        columnDistance = Math.abs(rabbitColumn - foxColumn); // columns rabbit is from fox
+                        totalDistance = Math.abs(rowDistance) + Math.abs(columnDistance); // total distance rabbit is from fox                
+                        
+                        // get fox to chase the closest rabbit
+                        // chase along row
+                        if(foxRow < rabbitRow)
+                        {
+                        	foxRow = foxRow+1;
+                        }
+                        else if(foxRow > rabbitRow)
+                        {
+                        	foxRow = foxRow-1;
+                        }
+                        // chase along column
+                        if(foxColumn < rabbitColumn)
+                        {
+                        	foxColumn = foxColumn+1;
+                        }
+                        else if(foxColumn > rabbitColumn)
+                        {
+                        	foxColumn = foxColumn-1;
+                        }
+                        
+                        // update foxes position on the game board for the next step
+                        foxes.get(foxCount).setRow(foxRow);
+                        foxes.get(foxCount).setColumn(foxColumn);
+                        
+                        // if the fox reaches a cell with a rabbit on it, fox kills the rabbit
+                        if(foxes.get(foxCount).getRow() == rabbitRow && foxes.get(foxCount).getColumn() == rabbitColumn)
+                        {
+                        	rabbits.remove(closestRabbit[0]);
+                        }
+                    }
+                    else // if fox has no rabbits within sight, move around
+                    {
+                    	if(foxRow <= 10)
+                    	{
+                    		foxes.get(foxCount).setRow(foxRow+1);
+                    	}
+                    	else
+                    	{
+                    		foxes.get(foxCount).setRow(foxRow-1);
+                    	}
+                    	
+                    	if(foxColumn <= 10)
+                    	{
+                    		foxes.get(foxCount).setColumn(foxColumn+1);
+                    	}
+                    	else
+                    	{
+                    		foxes.get(foxCount).setColumn(foxColumn-1);
+                    	}
                     }
                     
-                    // print info on current rabbit's position relative to current fox
-                    System.out.println(rabbitName+" is "+rowDistance+" rows and "+columnDistance+" columns from the fox"); // print the relative co-ordinate distance of the rabbit from the fox
-                    
-                    // check for closest rabbit
-                    if(totalDistance < closestDistance) // if this rabbit is currently the closest rabbit to the fox
-	                {
-	                	closestRabbit.add(rabbits.get(rabbitCount)); // store this rabbit as the closest rabbit in the foxes memory
-	                	closestDistance = totalDistance; // update the closest rabbit distance tracker with this rabbit's distance from fox
-	                	closestRabbitID = rabbitID; // update the closest rabbit ID with this rabbit's ID
-	                }
-                    
-               	}
-                // finish hunt set-up                
+                }
         	}
-            
-            // print info about this foxes hunt set-up
-            System.out.println("Fox sees "+rabbitsInSight.size()+" rabbits"); // print the number of rabbits within the foxes sight range
-            if(rabbitsInSight.size() > 0) // if there are any rabbits witin the foxes sight range
-            {
-                System.out.println("The closest rabbit to the fox is "+closestRabbit.get(closestRabbit.size()-1).getName()); // print the name of the closest rabbit to the fox
-                hunt = true;
-            }
-            
-            // hunt
-            if(hunt == true)
-            {
-            	// closest rabbit info
-                String closestRabbitName = rabbits.get(closestRabbitID).getName(); // rabbit name
-                int closestRabbitRow = rabbits.get(closestRabbitID).getRow(); // rabbit row
-                int closestRabbitColumn = rabbits.get(closestRabbitID).getColumn(); // rabbit column
-                int closestRabbitRowDistance = Math.abs(rabbitRow - foxRow); // rows rabbit is from fox
-                int closestRabbitColumnDistance = Math.abs(rabbitColumn - foxColumn); // columns rabbit is from fox
-                int closestRabbitTotalDistance = Math.abs(rowDistance) + Math.abs(columnDistance); // total distance rabbit is from fox                
-                
-                // get fox to chase the closest rabbit
-                // chase along row
-                if(foxRow < closestRabbitRow)
-                {
-                	foxRow = foxRow+1;
-                }
-                else if(foxRow > closestRabbitRow)
-                {
-                	foxRow = foxRow-1;
-                }
-                // chase along column
-                if(foxColumn < closestRabbitColumn)
-                {
-                	foxColumn = foxColumn+1;
-                }
-                else if(foxColumn > closestRabbitColumn)
-                {
-                	foxColumn = foxColumn-1;
-                }
-                
-                // update foxes position on the game board for the next step
-                foxes.get(foxID).setRow(foxRow);
-                foxes.get(foxID).setColumn(foxColumn);
-                
-                // if the fox reaches a cell with a rabbit on it, fox kills the rabbit
-                if(foxes.get(foxID).getRow() == closestRabbitRow && foxes.get(foxID).getColumn() == closestRabbitColumn)
-                {
-                	rabbits.remove(closestRabbitID);
-                }
-            }
-            // finish hunt
-            
-            
-            
-
-            
+          
         }        
     }     
-}
+

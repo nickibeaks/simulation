@@ -123,33 +123,39 @@ public class ExperimentTest
             }
             // **************************************************************************************************************************************************************************************************
             
-            // begin animal AI
+            // begin animal turn
             // for each animal, assess its situation and make decisions
             for(int iD = 0; iD < animals.size(); iD++)
             {
        
-            	// this animal brain*****************************************************************************************************************************************************************************
-            	// this animals info
-            	String name = new String(animals.get(iD).getName()); // name
-            	Class cls = animals.get(iD).getClass(); // class info
-            	String type = new String(cls.getName()); // class name
-            	int row = animals.get(iD).getRow(); // row
-            	int column = animals.get(iD).getColumn(); // column
-            	int sight = animals.get(iD).getSight()/10; // sight
-            	// other animal info
-            	int safeRow = 0;
-            	int safeColumn = 0;
-            	int furthestDistance = 0;
-            	int closestPrey = ((sight*2)+1);
-            	int closestPredator = ((sight*2)+1);
-            	int preyID = 0;
-            	int predatorID = 0;
-            	int otherRow = 0;
-            	int otherColumn = 0;
-            	String otherType = new String();
-            	int rowDistance = 0;
-            	int columnDistance = 0;
-            	int otherDistance = 0;
+            	// this animals' brain
+            	// this animals self awareness*********************************************************************************************************************************************************************
+            	String name = new String(animals.get(iD).getName()); // name of this
+            	Class cls = animals.get(iD).getClass(); // class info of this
+            	String type = new String(cls.getName()); // class name of this
+            	int row = animals.get(iD).getRow(); // row of this
+            	int column = animals.get(iD).getColumn(); // column of this
+            	int sight = animals.get(iD).getSight()/10; // sight of this
+            	int safeRow = 0; // if a predator is near this animal will look for the furthest row away from predator within this animals sight
+            	int safeColumn = 0; // if a predator is near this animal will look for the furthest row away from predator within this animals sight
+            	int furthestDistance = 0; // if a predator is near this animal will look for the cell that gets this animal furthest from predator
+            	// **********************************************************************************************************************************************************************************************
+            	
+            	// short term memory of this animal**************************************************************************************************************************************************************
+            	int otherRow = 0; // the row of the other animal currently in focus
+            	int otherColumn = 0; // the column of the other animal currently in focus
+            	Class otherCls; // class info of the other animal currently in focus
+            	String otherType = new String(); // the type of the other animal currently in focus
+            	int rowDistance = 0; // the row distance from this animal of the other animal currently in focus
+            	int columnDistance = 0; // the column distance from this animal of the other animal currently in focus
+            	int otherDistance = 0; // the total distance from this animal of the other animal currently in focus
+            	// ***********************************************************************************************************************************************************************************************
+            	
+            	// long term memory of this animal*************************************************************************************************************************************************************
+            	int closestPrey = ((sight*2)+1); // closest prey to this animal
+            	int closestPredator = ((sight*2)+1); // closest predator to this animal
+            	int preyID = 0; 
+            	int predatorID = 0; 
             	String[] prey = new String[10];
             	String[] predators = new String[10];
             	String[] friends = new String[10];
@@ -160,7 +166,7 @@ public class ExperimentTest
             	boolean danger = false;
             	// *********************************************************************************************************************************************************************************************
             	
-            	// this animal visual perimeters**************************************************************************************************************************************************************
+            	// this animals visual perimeters**************************************************************************************************************************************************************
             	int perimeterN = row - sight; // furthest cell this animal can see to the north
             	if(perimeterN < 0)
             	{
@@ -190,10 +196,11 @@ public class ExperimentTest
             	int perimeterDistanceS = Math.abs(perimeterS - row);
             	int perimeterDistanceW = Math.abs(perimeterW - column);
             	int perimeterDistanceE = Math.abs(perimeterE - column);
+            	
             	// ******************************************************************************************************************************************************************************************
             	
             	// press enter to continue                           
-                System.out.println("\nPress enter to see "+name+"'s attributes"); // Ask user to press enter
+                System.out.println("\nPress enter to see "+name+"'s self awareness"); // Ask user to press enter
                 input.nextLine();
                 System.out.println();
                 
@@ -201,12 +208,12 @@ public class ExperimentTest
             	System.out.println("Name: "+name);
             	System.out.println("Location: "+row+", "+column);
             	System.out.println("Sight: "+sight);
-            	System.out.println("Perimeter: "+perimeterN+"N, "+perimeterS+"S, "+perimeterW+"W, "+perimeterE);
+            	System.out.println("Perimeter: "+perimeterN+"N, "+perimeterS+"S, "+perimeterW+"W, "+perimeterE+"E");
             	System.out.println("Distance to Perimeter: "+perimeterDistanceN+", "+perimeterDistanceS+", "+perimeterDistanceW+", "+perimeterDistanceE);
             	System.out.println();
             	
             	// press enter to continue                           
-                System.out.println("\nPress enter to see "+name+"'s thoughts: "); // Ask user to press enter
+                System.out.println("\nPress enter to see "+name+"'s awareness of prey and predators: "); // Ask user to press enter
                 input.nextLine();
                 System.out.println();
         		        	
@@ -220,7 +227,7 @@ public class ExperimentTest
             				// other animal attributes****************************************************************************************************************************************************
                         	int otherID = board[i][j].getID(); // ID
             				String otherName = new String(animals.get(otherID).getName()); // name
-                        	Class otherCls = animals.get(otherID).getClass(); // class info
+                        	otherCls = animals.get(otherID).getClass(); // class info
                         	otherType = otherCls.getName(); // class name
                         	otherRow = animals.get(otherID).getRow(); // row
                         	otherColumn = animals.get(otherID).getColumn(); // column
@@ -242,8 +249,9 @@ public class ExperimentTest
                         			predators[numPredators] = otherName; // predator
                         			numPredators++; // increment number of predators in this animals sight
                         			danger = true; // set this animal to danger mode
-                        			System.out.println(name+" sees "+otherName);
-                        			System.out.println(otherName+" Location: "+otherRow+", "+otherColumn);
+                        			System.out.println(name+" sees a "+otherType+" at cell "+otherRow+", "+otherColumn);
+                        			System.out.println("The "+otherType+" is "+rowDistance+" rows and "+columnDistance+" columns away from this "+type);
+                        			System.out.println("Total Distance: "+otherDistance);
                         			
                         			if(otherDistance < closestPredator)
                         			{
@@ -263,7 +271,7 @@ public class ExperimentTest
                         				closestPrey = otherDistance;
                         			}
                         		}
-                        		
+
                         	}
                         	// *****************************************************************************************************************************************************************************                        	
             			}
@@ -276,11 +284,14 @@ public class ExperimentTest
             	{
             		// try to get out of danger
             		// closest predator info
+            		otherCls = animals.get(predatorID).getClass();
+            		otherType = otherCls.getName();
             		otherRow = animals.get(predatorID).getRow();
             		otherColumn = animals.get(predatorID).getColumn();
             		rowDistance = Math.abs(row - otherRow);
                 	columnDistance = Math.abs(column - otherColumn);
                 	otherDistance = Math.abs(rowDistance)+Math.abs(columnDistance);
+                	System.out.println(name+" is trying to escape from a "+otherType+" that is "+otherDistance+" cells away");
                 	
                 	// find safe cell (cell furthest away from closest predator)
             		for(int i = perimeterN; i < perimeterS; i++)
@@ -305,6 +316,8 @@ public class ExperimentTest
             	{
             		// try to catch the prey
             		// closest prey info
+            		otherCls = animals.get(preyID).getClass();
+            		otherType = otherCls.getName();
             		otherRow = animals.get(preyID).getRow();
             		otherColumn = animals.get(preyID).getColumn();
             		rowDistance = Math.abs(row - otherRow);
@@ -331,11 +344,13 @@ public class ExperimentTest
             	}
             	else
             	{
-            		System.out.println(name+" is just wandering the field without a care");
+            		System.out.println(name+" unaware of any prey or predators");
             	}
             	
             	// end of this animals turn
-            	
+            	// press enter to continue
+            	System.out.println("\nPress enter to go to next animal: ");
+            	input.nextLine();
             	
             }
             

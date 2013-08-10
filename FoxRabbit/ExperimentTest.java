@@ -156,9 +156,9 @@ public class ExperimentTest
             	int closestPredator = ((sight*2)+1); // closest predator to this animal
             	int preyID = 0; 
             	int predatorID = 0; 
-            	String[] prey = new String[10];
-            	String[] predators = new String[10];
-            	String[] friends = new String[10];
+            	int[] prey = new int[10];
+            	int[] predators = new int[10];
+            	int[] friends = new int[10];
             	int numPrey = 0;
             	int numPredators = 0;
             	int numFriends = 0;
@@ -204,6 +204,7 @@ public class ExperimentTest
                 input.nextLine();
                 System.out.println();
                 
+                // this animals' self awareness
             	System.out.println("Type: "+type);
             	System.out.println("Name: "+name);
             	System.out.println("Location: "+row+", "+column);
@@ -224,7 +225,7 @@ public class ExperimentTest
             		{
             			if(board[i][j] != null)
             			{
-            				// other animal attributes****************************************************************************************************************************************************
+            				// other animal info********************************************************************************************************************************************************
                         	int otherID = board[i][j].getID(); // ID
             				String otherName = new String(animals.get(otherID).getName()); // name
                         	otherCls = animals.get(otherID).getClass(); // class info

@@ -95,7 +95,10 @@ public class ExperimentTest
         	// place animals on the board using their stored co-ord attributes***********************************************************************************************************************************
         	for(int i = 0; i < animals.size(); i++)
         	{
-        		board[animals.get(i).getRow()][animals.get(i).getColumn()] = animals.get(i); // place animal on game board at configured animal co-ords
+        		if(animals.get(i).getHealth() > 0) // if animal is alive
+        		{
+            		board[animals.get(i).getRow()][animals.get(i).getColumn()] = animals.get(i); // place animal on game board at configured animal co-ords
+        		}
         	}     	
         	// **************************************************************************************************************************************************************************************************
         	
@@ -164,7 +167,7 @@ public class ExperimentTest
             	int numFriends = 0;
             	boolean hunt = false;
             	boolean danger = false;
-            	// *********************************************************************************************************************************************************************************************
+            	// ************************************************************************otherID*********************************************************************************************************************
             	
             	// this animals visual perimeters**************************************************************************************************************************************************************
             	int perimeterN = row - sight; // furthest cell this animal can see to the north
@@ -440,6 +443,11 @@ public class ExperimentTest
                 				animals.get(iD).setRow(i);
                 				animals.get(iD).setColumn(j);
                 				System.out.println(name+" will move to cell: "+i+", "+j+" to get closer to the other animal at a new distance of "+newDistance+" cells");
+                				
+                				if(i == otherRow && j == otherColumn) // if this animal gets onto same cell as other animal
+                				{
+                					animals.get(preyID).setHealth(0);
+                				}
                 				break outerloop;
                 			}
                 		}

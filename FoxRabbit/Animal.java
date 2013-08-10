@@ -92,7 +92,7 @@ public class Animal
         type = newType;
         sex = "male";
     }
-    
+     
     /**
      * Get the type of animal
      * 
@@ -136,8 +136,21 @@ public class Animal
     {
         return ID;
     }
+    
     /**
-     * et row
+     * Get the health of animal
+     * 
+     * @param 
+     * @return int 
+     */
+    public int getHealth()
+    {
+        return health;
+    }
+    
+    
+    /**
+     * Get row
      * 
      * @param 
      * @return int  
@@ -189,6 +202,17 @@ public class Animal
     public void setName(String newName)
     {
         name = newName;
+    }
+    
+    /**
+     * Set the health of animal
+     * 
+     * @param int
+     * @return 
+     */
+    public void setHealth(int newHealth)
+    {
+        health = newHealth;
     }
     
     /**

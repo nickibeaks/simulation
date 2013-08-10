@@ -240,14 +240,14 @@ public class ExperimentTest
                         	// this animals relative information on other animals it can see***************************************************************************************************************
                         	if(type.equals(otherType)) // if other animal is the same type of animal as this animal
                         	{
-                        		friends[numFriends] = otherName; // friend
+                        		friends[numFriends] = otherID; // friend
                         		numFriends++; // increment number of friends in this animals sight
                         	}
                         	else
                         	{
                         		if(type.equals("Rabbit") && otherType.equals("Fox")) // if this animal is a rabbit and other animal is a fox
                         		{
-                        			predators[numPredators] = otherName; // predator
+                        			predators[numPredators] = otherID; // predator
                         			numPredators++; // increment number of predators in this animals sight
                         			danger = true; // set this animal to danger mode
                         			System.out.println(name+" sees a "+otherType+" at cell "+otherRow+", "+otherColumn);
@@ -262,7 +262,7 @@ public class ExperimentTest
                         		}
                         		else if(type.equals("Fox") && otherType.equals("Rabbit")) // if this animal is a fox and other animal is a rabbit
                         		{
-                        			prey[numPrey] = otherName; // prey
+                        			prey[numPrey] = otherID; // prey
                         			numPrey++; // increment number of prey in this animals sight
                         			hunt = true; // set this animal to hunt mode
                         			

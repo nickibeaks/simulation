@@ -295,7 +295,7 @@ public class ExperimentTest
             		rowDistance = Math.abs(row - otherRow);
                 	columnDistance = Math.abs(column - otherColumn);
                 	otherDistance = Math.abs(rowDistance)+Math.abs(columnDistance);
-                	System.out.println(name+" is trying to escape from a "+otherType+" that is "+otherDistance+" cells away at cell: "+otherRow+", "+otherColumn);
+                	System.out.println(name+" is trying to escape from a "+otherType+" that is "+rowDistance+" rows and "+columnDistance+" columns away");
                 	
                 	// find safe cell (cell furthest away from closest predator)
             		for(int i = perimeterN; i < perimeterS; i++)
@@ -327,7 +327,7 @@ public class ExperimentTest
             		rowDistance = Math.abs(row - otherRow);
                 	columnDistance = Math.abs(column - otherColumn);
                 	otherDistance = Math.abs(rowDistance)+Math.abs(columnDistance);
-                	System.out.println(name+" is trying to catch a "+otherType+" that is "+otherDistance+" cells away at cell: "+otherRow+", "+otherColumn);
+                	System.out.println(name+" is trying to catch a "+otherType+" that is "+rowDistance+" rows and "+columnDistance+" columns away");
 	
             		if(row > otherRow)
             		{

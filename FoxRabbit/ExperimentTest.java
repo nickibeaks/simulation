@@ -234,7 +234,19 @@ public class ExperimentTest
                         	otherColumn = animals.get(otherID).getColumn(); // column
                         	rowDistance = Math.abs(row - otherRow);
                         	columnDistance = Math.abs(column - otherColumn);
-                        	otherDistance = Math.abs(rowDistance) + Math.abs(columnDistance);
+                        	// to find total distance we need to take into account the diagnal direction
+                        	if(rowDistance > columnDistance)
+                        	{
+                        		otherDistance = (rowDistance + columnDistance) - columnDistance;
+                        	}
+                        	else if(columnDistance > rowDistance)
+                        	{
+                        		otherDistance = (columnDistance + rowDistance) - rowDistance;
+                        	}
+                        	else
+                        	{
+                        		otherDistance = rowDistance;
+                        	}
                         	// ****************************************************************************************************************************************************************************
                         	
                         	// this animals relative information on other animals it can see***************************************************************************************************************

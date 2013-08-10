@@ -306,10 +306,23 @@ public class ExperimentTest
             		otherColumn = animals.get(predatorID).getColumn();
             		rowDistance = Math.abs(row - otherRow);
                 	columnDistance = Math.abs(column - otherColumn);
-                	otherDistance = Math.abs(rowDistance)+Math.abs(columnDistance);
-                	System.out.println(name+" is trying to escape from a "+otherType+" that is "+rowDistance+" rows and "+columnDistance+" columns away");
+                	// to find total distance we need to take into account the diagnal direction
+                	if(rowDistance > columnDistance)
+                	{
+                		otherDistance = rowDistance;
+                	}
+                	else if(columnDistance > rowDistance)
+                	{
+                		otherDistance = columnDistance;
+                	}
+                	else
+                	{
+                		otherDistance = rowDistance;
+                	}
                 	
-                	// find safe cell (cell furthest away from closest predator)
+                	System.out.println(name+" is trying to escape from a "+otherType+" that is "+otherDistance+" cells away");
+                	
+                	// escape predator
             		for(int i = perimeterN; i < perimeterS; i++)
             		{
             			for(int j = perimeterW; j < perimeterE; j++)
@@ -338,26 +351,23 @@ public class ExperimentTest
             		otherColumn = animals.get(preyID).getColumn();
             		rowDistance = Math.abs(row - otherRow);
                 	columnDistance = Math.abs(column - otherColumn);
-                	otherDistance = Math.abs(rowDistance)+Math.abs(columnDistance);
-                	System.out.println(name+" is trying to catch a "+otherType+" that is "+rowDistance+" rows and "+columnDistance+" columns away");
+                	// to find total distance we need to take into account the diagnal direction
+                	if(rowDistance > columnDistance)
+                	{
+                		otherDistance = rowDistance;
+                	}
+                	else if(columnDistance > rowDistance)
+                	{
+                		otherDistance = columnDistance;
+                	}
+                	else
+                	{
+                		otherDistance = rowDistance;
+                	}
+                	
+                	System.out.println(name+" is trying to catch a "+otherType+" that is "+otherDistance+" cells away");
 	
-            		if(row > otherRow)
-            		{
-            			row = row-1;
-            		}
-            		else
-            		{
-            			row = row+1;
-            		}
-            		
-            		if(column > otherColumn)
-            		{
-            			column = column-1;
-            		}
-            		else
-            		{
-            			column = column+1;
-            		}
+            		// chase prey
             	}
             	else
             	{

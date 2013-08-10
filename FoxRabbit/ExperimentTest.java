@@ -42,7 +42,7 @@ public class ExperimentTest
         Animal[][] board = new Animal[totalRows][totalColumns]; // memory for game board animal overlay
         
         // configure simulation
-        int numSteps = 2; // number of steps to go into the simulation before stopping
+        int numSteps = 20; // number of steps to go into the simulation before stopping
         // minimum and maximum numbers of animals to generate into the system at the beginning of simulation 
         int minRabbits = 2; 
         int maxRabbits = 8; 
@@ -199,6 +199,33 @@ public class ExperimentTest
             	
             	// ******************************************************************************************************************************************************************************************
             	
+            	// this animals movement perimeters**************************************************************************************************************************************************************
+            	int moveN = row - 1; // furthest cell this animal can move to the north in one step
+            	if(moveN < 0)
+            	{
+            		moveN = 0;
+            	}
+            	
+            	int moveS = row + 1; // furthest cell this animal can can move to the south in one step
+            	if(moveS > totalRows-1)
+            	{
+            		moveS = totalRows-1;
+            	}
+            	
+            	int moveW = column - 1; // furtherst cell this animal can move to the west in one step
+            	if(moveW < 0)
+            	{
+            		moveW = 0;
+            	}
+            	
+            	int moveE = column + 1; // furtherst cell this animal can move to the east in one step
+            	if(moveE > totalColumns-1)
+            	{
+            		moveE = totalColumns-1;
+            	}
+         	
+            	// ******************************************************************************************************************************************************************************************
+            	
             	// press enter to continue                           
                 System.out.println("\nPress enter to see "+name+"'s self awareness"); // Ask user to press enter
                 input.nextLine();
@@ -325,10 +352,11 @@ public class ExperimentTest
                 	// escape predator
                 	// check all cells within 1 move of this animal and move to the first one that makes the distance between this animal and other animal greater than before
                 	outerloop:
-                	for(int i = row-1; i <= row+1; i++)
+                	for(int i = moveN; i <= moveS; i++)
                 	{
-                		for(int j = column-1; j <= column+1; j++)
-                		{
+                		innerloop:
+                		for(int j = moveW; j <= moveE; j++)
+                		{      			
                 			int newRowDistance = Math.abs(i - otherRow);
                 			int newColumnDistance = Math.abs(j - otherColumn);
                 			int newDistance = 0;
@@ -384,6 +412,38 @@ public class ExperimentTest
                 	System.out.println(name+" is trying to catch a "+otherType+" that is "+otherDistance+" cells away");
 	
             		// chase prey
+                	// check all cells within 1 move of this animal and move to the first one that makes the distance between this animal and other animal less than before
+                	outerloop:
+                	for(int i = moveN; i <= moveS; i++)
+                	{
+                		innerloop:
+                		for(int j = moveW; j <= moveE; j++)
+                		{      			              			
+                			int newRowDistance = Math.abs(i - otherRow);
+                			int newColumnDistance = Math.abs(j - otherColumn);               			
+                			int newDistance = 0;
+                			if(newRowDistance > newColumnDistance)
+                			{
+                				newDistance = newRowDistance;
+                			}
+                			else if(newColumnDistance > newRowDistance)
+                			{
+                				newDistance = newColumnDistance;
+                			}
+                			else
+                			{
+                				newDistance = newRowDistance;
+                			}
+                			
+                			if(newDistance < otherDistance) // if new cell put this animal further away from other animal, move to new cell
+                			{
+                				animals.get(iD).setRow(i);
+                				animals.get(iD).setColumn(j);
+                				System.out.println(name+" will move to cell: "+i+", "+j+" to get closer to the other animal at a new distance of "+newDistance+" cells");
+                				break outerloop;
+                			}
+                		}
+                	}
                 	
             	}
             	else

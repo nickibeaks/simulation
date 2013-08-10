@@ -237,11 +237,11 @@ public class ExperimentTest
                         	// to find total distance we need to take into account the diagnal direction
                         	if(rowDistance > columnDistance)
                         	{
-                        		otherDistance = (rowDistance + columnDistance) - columnDistance;
+                        		otherDistance = rowDistance;
                         	}
                         	else if(columnDistance > rowDistance)
                         	{
-                        		otherDistance = (columnDistance + rowDistance) - rowDistance;
+                        		otherDistance = columnDistance;
                         	}
                         	else
                         	{

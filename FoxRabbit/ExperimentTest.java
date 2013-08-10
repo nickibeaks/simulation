@@ -162,9 +162,11 @@ public class ExperimentTest
             	int[] prey = new int[10];
             	int[] predators = new int[10];
             	int[] friends = new int[10];
+            	int[] neutral = new int[10];
             	int numPrey = 0;
             	int numPredators = 0;
             	int numFriends = 0;
+            	int numNeutral = 0;
             	boolean hunt = false;
             	boolean danger = false;
             	// ************************************************************************otherID*********************************************************************************************************************
@@ -376,12 +378,22 @@ public class ExperimentTest
                 				newDistance = newRowDistance;
                 			}
                 			
-                			if(newDistance > otherDistance) // if new cell put this animal further away from other animal, move to new cell
+                			if(newDistance > otherDistance) // if new cell puts this animal closer to other animal, move to new cell
                 			{
-                				animals.get(iD).setRow(i);
-                				animals.get(iD).setColumn(j);
-                				System.out.println(name+" will move to cell: "+i+", "+j+" to get further away from the other animal at a new distance of "+newDistance+" cells");
-                				break outerloop;
+                				if(board[i][j] != null) // if there is another animal present on potential new cell
+                				{
+                					// do nothing
+                				}
+                				else // if cell is empty
+                				{
+                    				// move to the new cell
+                					animals.get(iD).setRow(i);
+                    				animals.get(iD).setColumn(j);
+                    				System.out.println(name+" will move to cell: "+i+", "+j+" to get further away from the other animal at a new distance of "+newDistance+" cells");
+                    				break outerloop;
+                				}
+                				
+                				
                 			}
                 		}
                 	}
@@ -438,19 +450,36 @@ public class ExperimentTest
                 				newDistance = newRowDistance;
                 			}
                 			
-                			if(newDistance < otherDistance) // if new cell put this animal further away from other animal, move to new cell
+                			if(newDistance < otherDistance) // if new cell puts this animal closer to other animal, move to new cell
                 			{
-                				animals.get(iD).setRow(i);
-                				animals.get(iD).setColumn(j);
-                				System.out.println(name+" will move to cell: "+i+", "+j+" to get closer to the other animal at a new distance of "+newDistance+" cells");
-                				
-                				if(i == otherRow && j == otherColumn) // if this animal gets onto same cell as other animal
+                				if(board[i][j] != null) // if there is another animal present on potential new cell
                 				{
-                					animals.get(preyID).setHealth(0);
+                            		for(int k = 0; k <= numPrey; k++) // check if it's prey
+                            		{
+                            			if(prey[k] == board[i][j].getID()) // if it's prey
+                            			{
+                            				// move to the new cell
+                            				animals.get(iD).setRow(i);
+                            				animals.get(iD).setColumn(j);
+                            				System.out.println(name+" will move to cell: "+i+", "+j+" and will kill the "+otherType+" present");
+                            				board[i][j].setHealth(0); // kill prey present on new cell
+                            				break outerloop;
+                            			}
+                            		}
                 				}
-                				break outerloop;
+                				else // if cell is empty
+                				{
+                    				// move to the new cell
+                					animals.get(iD).setRow(i);
+                    				animals.get(iD).setColumn(j);
+                    				System.out.println(name+" will move to cell: "+i+", "+j+" to get closer to the other animal at a new distance of "+newDistance+" cells");
+                    				break outerloop;
+                				}
+                				
+                				
                 			}
                 		}
+	    				   				
                 	}
                 	
             	}
@@ -459,6 +488,7 @@ public class ExperimentTest
             		System.out.println(name+" unaware of any prey or predators");
             	}
             	
+      	
             	// end of this animals turn
             	// press enter to continue
             	System.out.println("\nPress enter to go to next animal: ");

@@ -39,7 +39,7 @@ public class ExperimentTest
         int numAnimals = 0; // counter for the total number of animals in the system
         int numRabbits = 0; // counter for number of rabbits in the system
         int numFoxes = 0; // counter for number of foxes in the system
-        Animal[][] board = new Animal[totalRows][totalColumns]; // memory for game board
+        Animal[][] board = new Animal[totalRows][totalColumns]; // memory for game board animal overlay
         
         // configure simulation
         int numSteps = 2; // number of steps to go into the simulation before stopping
@@ -95,7 +95,7 @@ public class ExperimentTest
         	// place animals on the board using their stored co-ord attributes***********************************************************************************************************************************
         	for(int i = 0; i < animals.size(); i++)
         	{
-        		board[animals.get(i).getRow()][animals.get(i).getColumn()] = animals.get(i); // place animal on game board at it's configured co-ords
+        		board[animals.get(i).getRow()][animals.get(i).getColumn()] = animals.get(i); // place animal on game board at configured animal co-ords
         	}     	
         	// **************************************************************************************************************************************************************************************************
         	
@@ -234,7 +234,7 @@ public class ExperimentTest
                         	otherColumn = animals.get(otherID).getColumn(); // column
                         	rowDistance = Math.abs(row - otherRow);
                         	columnDistance = Math.abs(column - otherColumn);
-                        	otherDistance = Math.abs(rowDistance)+Math.abs(columnDistance);
+                        	otherDistance = Math.abs(rowDistance) + Math.abs(columnDistance);
                         	// ****************************************************************************************************************************************************************************
                         	
                         	// this animals relative information on other animals it can see***************************************************************************************************************
@@ -265,6 +265,9 @@ public class ExperimentTest
                         			prey[numPrey] = otherID; // prey
                         			numPrey++; // increment number of prey in this animals sight
                         			hunt = true; // set this animal to hunt mode
+                        			System.out.println(name+" sees a "+otherType+" at cell "+otherRow+", "+otherColumn);
+                        			System.out.println("The "+otherType+" is "+rowDistance+" rows and "+columnDistance+" columns away from this "+type);
+                        			System.out.println("Total Distance: "+otherDistance);
                         			
                         			if(otherDistance < closestPrey)
                         			{
@@ -281,7 +284,7 @@ public class ExperimentTest
             	}
             	
             	// this animals state of mind
-            	if(danger == true)
+            	if(danger == true) // if animal is in danger
             	{
             		// try to get out of danger
             		// closest predator info
@@ -292,7 +295,7 @@ public class ExperimentTest
             		rowDistance = Math.abs(row - otherRow);
                 	columnDistance = Math.abs(column - otherColumn);
                 	otherDistance = Math.abs(rowDistance)+Math.abs(columnDistance);
-                	System.out.println(name+" is trying to escape from a "+otherType+" that is "+otherDistance+" cells away");
+                	System.out.println(name+" is trying to escape from a "+otherType+" that is "+otherDistance+" cells away at cell: "+otherRow+", "+otherColumn);
                 	
                 	// find safe cell (cell furthest away from closest predator)
             		for(int i = perimeterN; i < perimeterS; i++)
@@ -313,7 +316,7 @@ public class ExperimentTest
 
             		
             	}
-            	else if(danger == false && hunt == true)
+            	else if(danger == false && hunt == true) // if animal sees prey and is not in danger
             	{
             		// try to catch the prey
             		// closest prey info
@@ -324,6 +327,7 @@ public class ExperimentTest
             		rowDistance = Math.abs(row - otherRow);
                 	columnDistance = Math.abs(column - otherColumn);
                 	otherDistance = Math.abs(rowDistance)+Math.abs(columnDistance);
+                	System.out.println(name+" is trying to catch a "+otherType+" that is "+otherDistance+" cells away at cell: "+otherRow+", "+otherColumn);
 	
             		if(row > otherRow)
             		{

@@ -278,7 +278,7 @@ public class ExperimentTest
                         			numPrey++; // increment number of prey in this animals sight
                         			hunt = true; // set this animal to hunt mode
                         			System.out.println(name+" sees a "+otherType+" at cell "+otherRow+", "+otherColumn);
-                        			System.out.println("The "+otherType+" is "+rowDistance+" rows and "+columnDistance+" columns away from this "+type);
+                        			System.out.println("The "+otherType+" is "+rowDistance+" rows aotherDistancend "+columnDistance+" columns away from this "+type);
                         			System.out.println("Total Distance: "+otherDistance);
                         			
                         			if(otherDistance < closestPrey)
@@ -323,21 +323,37 @@ public class ExperimentTest
                 	System.out.println(name+" is trying to escape from a "+otherType+" that is "+otherDistance+" cells away");
                 	
                 	// escape predator
-            		for(int i = perimeterN; i < perimeterS; i++)
-            		{
-            			for(int j = perimeterW; j < perimeterE; j++)
-            			{
-            				if(Math.abs(i-otherRow) > rowDistance)
-            				{
-            					safeRow = i;
-            				}
-            				
-            				if(Math.abs(j-otherColumn) > columnDistance)
-            				{
-            					safeColumn = j;
-            				}
-            			}
-            		}
+                	// check all cells within 1 move of this animal and move to the first one that makes the distance between this animal and other animal greater than before
+                	outerloop:
+                	for(int i = row-1; i <= row+1; i++)
+                	{
+                		for(int j = column-1; j <= column+1; j++)
+                		{
+                			int newRowDistance = Math.abs(i - otherRow);
+                			int newColumnDistance = Math.abs(j - otherColumn);
+                			int newDistance = 0;
+                			if(newRowDistance > newColumnDistance)
+                			{
+                				newDistance = newRowDistance;
+                			}
+                			else if(newColumnDistance > newRowDistance)
+                			{
+                				newDistance = newColumnDistance;
+                			}
+                			else
+                			{
+                				newDistance = newRowDistance;
+                			}
+                			
+                			if(newDistance > otherDistance) // if new cell put this animal further away from other animal, move to new cell
+                			{
+                				animals.get(iD).setRow(i);
+                				animals.get(iD).setColumn(j);
+                				System.out.println(name+" will move to cell: "+i+", "+j+" to get further away from the other animal at a new distance of "+newDistance+" cells");
+                				break outerloop;
+                			}
+                		}
+                	}
 
             		
             	}
@@ -368,6 +384,7 @@ public class ExperimentTest
                 	System.out.println(name+" is trying to catch a "+otherType+" that is "+otherDistance+" cells away");
 	
             		// chase prey
+                	
             	}
             	else
             	{
@@ -381,6 +398,7 @@ public class ExperimentTest
             	
             }
             
+            // end of simulation step
             // press enter to continue                           
             System.out.println("\nPress enter to continue to next simulation step: "); // Ask user to press enter
             input.nextLine();

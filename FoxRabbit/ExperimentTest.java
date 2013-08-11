@@ -42,7 +42,7 @@ public class ExperimentTest
         Animal[][] board = new Animal[totalRows][totalColumns]; // memory for game board animal overlay
         
         // configure simulation
-        int numSteps = 20; // number of steps to go into the simulation before stopping
+        int numSteps = 40; // number of steps to go into the simulation before stopping
         // minimum and maximum numbers of animals to generate into the system at the beginning of simulation 
         int minRabbits = 2; 
         int maxRabbits = 8; 
@@ -99,14 +99,18 @@ public class ExperimentTest
         		{
             		board[animals.get(i).getRow()][animals.get(i).getColumn()] = animals.get(i); // place animal on game board at configured animal co-ords
         		}
+        		else
+        		{
+        			board[animals.get(i).getRow()][animals.get(i).getColumn()] = null;
+        		}
         	}     	
         	// **************************************************************************************************************************************************************************************************
         	
         	System.out.println("\nStep: "+(step+1));
             
             // press enter to initiate simulation step                            
-            System.out.println("\nPress enter to print the game board for step "+(step+1)+": "); // Ask user to press enter to move to next round
-            input.nextLine();
+            // System.out.println("\nPress enter to print the game board for step "+(step+1)+": "); // Ask user to press enter to move to next round
+            // input.nextLine();
             
             // print out game board******************************************************************************************************************************************************************************
             for(int i = 0; i < board.length; i++) // for the number of rows on the game board
@@ -126,6 +130,11 @@ public class ExperimentTest
             }
             // **************************************************************************************************************************************************************************************************
             
+            // press enter to continue
+            System.out.println("Press enter to continue: ");
+            input.nextLine();
+            
+            
             // begin animal turn
             // for each animal, assess its situation and make decisions
             for(int iD = 0; iD < animals.size(); iD++)
@@ -137,10 +146,11 @@ public class ExperimentTest
             	Class cls = animals.get(iD).getClass(); // class info of this
             	String type = new String(cls.getName()); // class name of this
             	int row = animals.get(iD).getRow(); // row of this
+            	int health = animals.get(iD).getHealth(); // health of this
             	int column = animals.get(iD).getColumn(); // column of this
             	int sight = animals.get(iD).getSight()/10; // sight of this
-            	int safeRow = 0; // if a predator is near this animal will look for the furthest row away from predator within this animals sight
-            	int safeColumn = 0; // if a predator is near this animal will look for the furthest row away from predator within this animals sight
+            	int newRow = 0; // if a predator is near this animal will look for the furthest row away from predator within this animals sight
+            	int newColumn = 0; // if a predator is near this animal will look for the furthest row away from predator within this animals sight
             	int furthestDistance = 0; // if a predator is near this animal will look for the cell that gets this animal furthest from predator
             	// **********************************************************************************************************************************************************************************************
             	
@@ -152,6 +162,7 @@ public class ExperimentTest
             	int rowDistance = 0; // the row distance from this animal of the other animal currently in focus
             	int columnDistance = 0; // the column distance from this animal of the other animal currently in focus
             	int otherDistance = 0; // the total distance from this animal of the other animal currently in focus
+            	int bestDistance = 0; // this animals desired new distance from other animal
             	// ***********************************************************************************************************************************************************************************************
             	
             	// long term memory of this animal*************************************************************************************************************************************************************
@@ -232,13 +243,14 @@ public class ExperimentTest
             	// ******************************************************************************************************************************************************************************************
             	
             	// press enter to continue                           
-                System.out.println("\nPress enter to see "+name+"'s self awareness"); // Ask user to press enter
-                input.nextLine();
+                // System.out.println("\nPress enter to see "+name+"'s self awareness"); // Ask user to press enter
+                // input.nextLine();
                 System.out.println();
                 
                 // this animals' self awareness
             	System.out.println("Type: "+type);
             	System.out.println("Name: "+name);
+            	System.out.println("Health: "+health);
             	System.out.println("Location: "+row+", "+column);
             	System.out.println("Sight: "+sight);
             	System.out.println("Perimeter: "+perimeterN+"N, "+perimeterS+"S, "+perimeterW+"W, "+perimeterE+"E");
@@ -246,8 +258,8 @@ public class ExperimentTest
             	System.out.println();
             	
             	// press enter to continue                           
-                System.out.println("\nPress enter to see "+name+"'s awareness of prey and predators: "); // Ask user to press enter
-                input.nextLine();
+                // System.out.println("\nPress enter to see "+name+"'s awareness of prey and predators: "); // Ask user to press enter
+                // input.nextLine();
                 System.out.println();
         		        	
             	// check perimeter for other animals******************************************************************************************************************************************************
@@ -327,8 +339,8 @@ public class ExperimentTest
             		}
             	}
             	
-            	// this animals state of mind
-            	if(danger == true) // if animal is in danger
+            	// this animals action
+            	if(danger == true) // if animal is in danger************************************************************************************************************************************************
             	{
             		// try to get out of danger
             		// closest predator info
@@ -351,6 +363,7 @@ public class ExperimentTest
                 	{
                 		otherDistance = rowDistance;
                 	}
+                	bestDistance = otherDistance;
                 	
                 	System.out.println(name+" is trying to escape from a "+otherType+" that is "+otherDistance+" cells away");
                 	
@@ -362,6 +375,7 @@ public class ExperimentTest
                 		innerloop:
                 		for(int j = moveW; j <= moveE; j++)
                 		{      			
+                			// assess potential cells for their distance away from other animal
                 			int newRowDistance = Math.abs(i - otherRow);
                 			int newColumnDistance = Math.abs(j - otherColumn);
                 			int newDistance = 0;
@@ -378,29 +392,25 @@ public class ExperimentTest
                 				newDistance = newRowDistance;
                 			}
                 			
-                			if(newDistance > otherDistance) // if new cell puts this animal closer to other animal, move to new cell
+                			if(newDistance >= bestDistance && board[i][j] == null) // if new cell puts this animal further from other animal and there is no other animal occupying the cell
                 			{
-                				if(board[i][j] != null) // if there is another animal present on potential new cell
-                				{
-                					// do nothing
-                				}
-                				else // if cell is empty
-                				{
-                    				// move to the new cell
-                					animals.get(iD).setRow(i);
-                    				animals.get(iD).setColumn(j);
-                    				System.out.println(name+" will move to cell: "+i+", "+j+" to get further away from the other animal at a new distance of "+newDistance+" cells");
-                    				break outerloop;
-                				}
-                				
-                				
-                			}
+                				bestDistance = newDistance; // update best possible distance from other animal
+                				newRow = i; // set prefered move to this row
+                				newColumn = j; // set prefered move to this column
+                			}               			
                 		}
                 	}
 
-            		
+                	if(bestDistance >= otherDistance) // if the recorded best distance cell is further away or the same distance from other animal than current cell 
+                	{
+        				// move to the new cell
+    					animals.get(iD).setRow(newRow);
+        				animals.get(iD).setColumn(newColumn);
+        				System.out.println(name+" will move to cell: "+newRow+", "+newColumn+" to get further away from the other animal at a new distance of "+bestDistance+" cells");
+                	}
+           		
             	}
-            	else if(danger == false && hunt == true) // if animal sees prey and is not in danger
+            	else if(danger == false && hunt == true) // if animal sees prey and is not in danger*************************************************************************************************************
             	{
             		// try to catch the prey
             		// closest prey info
@@ -423,6 +433,7 @@ public class ExperimentTest
                 	{
                 		otherDistance = rowDistance;
                 	}
+                	bestDistance = otherDistance;
                 	
                 	System.out.println(name+" is trying to catch a "+otherType+" that is "+otherDistance+" cells away");
 	
@@ -450,36 +461,19 @@ public class ExperimentTest
                 				newDistance = newRowDistance;
                 			}
                 			
-                			if(newDistance < otherDistance) // if new cell puts this animal closer to other animal, move to new cell
+                			if(newDistance < otherDistance) // if new cell puts this animal closer to other animal
                 			{
-                				if(board[i][j] != null) // if there is another animal present on potential new cell
+                				// move to the new cell
+                				animals.get(iD).setRow(i);
+                				animals.get(iD).setColumn(j);
+                				System.out.println(name+" will move to cell: "+i+", "+j+" and will kill the "+otherType+" present");
+                				if(animals.get(preyID).getRow() == i && animals.get(preyID).getColumn() == j) // if prey is on new cell
                 				{
-                            		for(int k = 0; k <= numPrey; k++) // check if it's prey
-                            		{
-                            			if(prey[k] == board[i][j].getID()) // if it's prey
-                            			{
-                            				// move to the new cell
-                            				animals.get(iD).setRow(i);
-                            				animals.get(iD).setColumn(j);
-                            				System.out.println(name+" will move to cell: "+i+", "+j+" and will kill the "+otherType+" present");
-                            				board[i][j].setHealth(0); // kill prey present on new cell
-                            				break outerloop;
-                            			}
-                            		}
+                					animals.get(preyID).setHealth(0); // kill prey
                 				}
-                				else // if cell is empty
-                				{
-                    				// move to the new cell
-                					animals.get(iD).setRow(i);
-                    				animals.get(iD).setColumn(j);
-                    				System.out.println(name+" will move to cell: "+i+", "+j+" to get closer to the other animal at a new distance of "+newDistance+" cells");
-                    				break outerloop;
-                				}
-                				
-                				
+                				break outerloop;
                 			}
-                		}
-	    				   				
+                		}	    				   				
                 	}
                 	
             	}
@@ -487,19 +481,19 @@ public class ExperimentTest
             	{
             		System.out.println(name+" unaware of any prey or predators");
             	}
-            	
       	
-            	// end of this animals turn
+      	
+            	// end of this animals turn***********************************************************************************************************************************************************************
             	// press enter to continue
-            	System.out.println("\nPress enter to go to next animal: ");
-            	input.nextLine();
+            	// System.out.println("\nPress enter to go to next animal: ");
+            	// input.nextLine();
             	
             }
             
             // end of simulation step
             // press enter to continue                           
-            System.out.println("\nPress enter to continue to next simulation step: "); // Ask user to press enter
-            input.nextLine();
+            // System.out.println("\nPress enter to continue to next simulation step: "); // Ask user to press enter
+            // input.nextLine();
             System.out.println();
         }
         

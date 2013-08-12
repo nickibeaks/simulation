@@ -79,6 +79,10 @@ public class ExperimentTest
         }
         // ******************************************************************************************************************************************************************************************************
         
+        
+        
+        
+        
         // start simulation step*********************************************************************************************************************************************************************************
         for(int step = 0; step < numSteps; step++)
         {
@@ -146,12 +150,13 @@ public class ExperimentTest
             	Class cls = animals.get(iD).getClass(); // class info of this
             	String type = new String(cls.getName()); // class name of this
             	int row = animals.get(iD).getRow(); // row of this
-            	int health = animals.get(iD).getHealth(); // health of this
             	int column = animals.get(iD).getColumn(); // column of this
+            	int newRow = row; // row to move to on this turn
+            	int newColumn = column; // column to move to on this turn
+            	int bestRow = row; // row within this animals sight that is its most favoured location
+            	int bestColumn = column; // column within this animals sight that is its most favoured location
             	int sight = animals.get(iD).getSight()/10; // sight of this
-            	int newRow = 0; // if a predator is near this animal will look for the furthest row away from predator within this animals sight
-            	int newColumn = 0; // if a predator is near this animal will look for the furthest row away from predator within this animals sight
-            	int furthestDistance = 0; // if a predator is near this animal will look for the cell that gets this animal furthest from predator
+            	int health = animals.get(iD).getHealth(); // health of this
             	// **********************************************************************************************************************************************************************************************
             	
             	// short term memory of this animal**************************************************************************************************************************************************************
@@ -163,6 +168,7 @@ public class ExperimentTest
             	int columnDistance = 0; // the column distance from this animal of the other animal currently in focus
             	int otherDistance = 0; // the total distance from this animal of the other animal currently in focus
             	int bestDistance = 0; // this animals desired new distance from other animal
+            	int furthestDistance = 0; // if a predator is near this animal will look for the cell that gets this animal furthest from predator
             	// ***********************************************************************************************************************************************************************************************
             	
             	// long term memory of this animal*************************************************************************************************************************************************************
@@ -301,7 +307,7 @@ public class ExperimentTest
                         	}
                         	else
                         	{
-                        		if(type.equals("Rabbit") && otherType.equals("Fox")) // if this animal is a rabbit and other animal is a fox
+                        		if(type.equals("Rabbit") & otherType.equals("Fox")) // if this animal is a rabbit and other animal is a fox
                         		{
                         			predators[numPredators] = otherID; // predator
                         			numPredators++; // increment number of predators in this animals sight
@@ -309,6 +315,8 @@ public class ExperimentTest
                         			System.out.println(name+" sees a "+otherType+" at cell "+otherRow+", "+otherColumn);
                         			System.out.println("The "+otherType+" is "+rowDistance+" rows and "+columnDistance+" columns away from this "+type);
                         			System.out.println("Total Distance: "+otherDistance);
+                                	System.out.println("Prey In Sight: "+numPrey);
+                                	System.out.println("Predators In Sight: "+numPredators);
                         			
                         			if(otherDistance < closestPredator)
                         			{
@@ -316,7 +324,7 @@ public class ExperimentTest
                         				closestPredator = otherDistance;
                         			}
                         		}
-                        		else if(type.equals("Fox") && otherType.equals("Rabbit")) // if this animal is a fox and other animal is a rabbit
+                        		else if(type.equals("Fox") & otherType.equals("Rabbit")) // if this animal is a fox and other animal is a rabbit
                         		{
                         			prey[numPrey] = otherID; // prey
                         			numPrey++; // increment number of prey in this animals sight
@@ -324,6 +332,8 @@ public class ExperimentTest
                         			System.out.println(name+" sees a "+otherType+" at cell "+otherRow+", "+otherColumn);
                         			System.out.println("The "+otherType+" is "+rowDistance+" rows aotherDistancend "+columnDistance+" columns away from this "+type);
                         			System.out.println("Total Distance: "+otherDistance);
+                                	System.out.println("Prey In Sight: "+numPrey);
+                                	System.out.println("Predators In Sight: "+numPredators);
                         			
                         			if(otherDistance < closestPrey)
                         			{
@@ -344,70 +354,110 @@ public class ExperimentTest
             	{
             		// try to get out of danger
             		// closest predator info
-            		otherCls = animals.get(predatorID).getClass();
-            		otherType = otherCls.getName();
-            		otherRow = animals.get(predatorID).getRow();
-            		otherColumn = animals.get(predatorID).getColumn();
-            		rowDistance = Math.abs(row - otherRow);
-                	columnDistance = Math.abs(column - otherColumn);
+            		otherCls = animals.get(predatorID).getClass(); // class of other
+            		otherType = otherCls.getName(); // type of other
+            		otherRow = animals.get(predatorID).getRow(); // row of other
+            		otherColumn = animals.get(predatorID).getColumn(); // columns of other
+            		rowDistance = Math.abs(row - otherRow); // row distance of other from this
+                	columnDistance = Math.abs(column - otherColumn); // column distance of other from this
+            		otherDistance = rowDistance; // use row distance as total travel distance
                 	// to find total distance we need to take into account the diagnal direction
-                	if(rowDistance > columnDistance)
+                	if(rowDistance > columnDistance) // if other is further away along row than column
                 	{
-                		otherDistance = rowDistance;
+                		otherDistance = rowDistance; // total travel distance from other is row distance
                 	}
-                	else if(columnDistance > rowDistance)
+                	else if (columnDistance > rowDistance) // if other is further away along column than row
                 	{
-                		otherDistance = columnDistance;
+                		otherDistance = columnDistance; // total travel distance from other is column distance
                 	}
-                	else
-                	{
-                		otherDistance = rowDistance;
-                	}
-                	bestDistance = otherDistance;
+                	
+                	bestDistance = otherDistance; // assume best possible distance for next step is current distance
+                	furthestDistance = otherDistance; // assume furthest distance possible is current distance
                 	
                 	System.out.println(name+" is trying to escape from a "+otherType+" that is "+otherDistance+" cells away");
                 	
                 	// escape predator
-                	// check all cells within 1 move of this animal and move to the first one that makes the distance between this animal and other animal greater than before
-                	outerloop:
-                	for(int i = moveN; i <= moveS; i++)
+        			// find the cell within this animals sight perimeter that is furthest away from predator                	
+                	for(int i = perimeterN; i <= perimeterS; i++) // latitudinal sight perimeter
                 	{
-                		innerloop:
-                		for(int j = moveW; j <= moveE; j++)
-                		{      			
-                			// assess potential cells for their distance away from other animal
-                			int newRowDistance = Math.abs(i - otherRow);
-                			int newColumnDistance = Math.abs(j - otherColumn);
-                			int newDistance = 0;
-                			if(newRowDistance > newColumnDistance)
-                			{
-                				newDistance = newRowDistance;
-                			}
-                			else if(newColumnDistance > newRowDistance)
-                			{
-                				newDistance = newColumnDistance;
-                			}
-                			else
-                			{
-                				newDistance = newRowDistance;
-                			}
+                		for(int j = perimeterW; j <= perimeterE; j++) // longitudinal sight perimeter
+                		{
+                        	int newRowDistance = Math.abs(i - otherRow); // distance this row is from other animal
+                        	int newColumnDistance = Math.abs(j - otherColumn); // distance this column is from other animal
+                        	int newDistance = newRowDistance; // for now assume total travel distance is row distance
                 			
-                			if(newDistance >= bestDistance && board[i][j] == null) // if new cell puts this animal further from other animal and there is no other animal occupying the cell
-                			{
-                				bestDistance = newDistance; // update best possible distance from other animal
-                				newRow = i; // set prefered move to this row
-                				newColumn = j; // set prefered move to this column
-                			}               			
+                        	if(newRowDistance > newColumnDistance) // if other animal is further away from this cell along row than column
+                        	{
+                        		newDistance = newRowDistance; // total travel distance for other animal to this cell is row distance
+                        	}
+                        	else if(newColumnDistance > newRowDistance) // if other animal is further away from this cell along column than row
+                        	{
+                        		newDistance = newColumnDistance; // total travel distance for other animal to this cell is column distance
+                        	}
+                        	
+                        	// check if this cell is further from predator than previous furthest cell
+                        	if(newDistance > bestDistance)
+                        	{
+                        		// set best cell
+                        		bestRow = i;
+                        		bestColumn = j;
+                        		bestDistance = newDistance; // update best distance
+                        	}                			
                 		}
                 	}
-
-                	if(bestDistance >= otherDistance) // if the recorded best distance cell is further away or the same distance from other animal than current cell 
+                	
+                	// this animal move towards best cell
+        			for(int i = moveN; i <= moveS; i++) // latitudinal move perimeter
                 	{
-        				// move to the new cell
-    					animals.get(iD).setRow(newRow);
-        				animals.get(iD).setColumn(newColumn);
-        				System.out.println(name+" will move to cell: "+newRow+", "+newColumn+" to get further away from the other animal at a new distance of "+bestDistance+" cells");
+                		for(int j = moveW; j <= moveE; j++) // longitudinal move perimiter
+                		{      			
+                			// assess distance of current cell to best cell                			
+                			int bestRowDistance = Math.abs(row - bestRow); // distance current row is from best row
+                			int bestColumnDistance = Math.abs(column - bestColumn); // distance current column is from best column
+                			int startingDistance = bestRowDistance; // for now assume total travel distance from current cell to best cell is row distance
+                			
+                			if(bestRowDistance > bestColumnDistance) // if row is further from best cell than column
+                			{
+                				startingDistance = bestRowDistance; // total travel distance from current cell to best cell is row distance
+                			}
+                			else if(bestColumnDistance > bestRowDistance) // if column is further from best cell than row
+                			{
+                				startingDistance = bestColumnDistance; // total travel distance from current cell to best cell is column distance
+                			}
+                			
+                			// assess potential cells within move perimeter distances to best cell
+                			int newRowDistance = Math.abs(i - bestRow); // distance this row is from best row
+                			int newColumnDistance = Math.abs(j - bestColumn); // distance this column is from best column
+                			int newDistance = newRowDistance; // for now assume total travel distance to best cell is row distance
+                			
+                			if(newRowDistance > newColumnDistance) // if new row is closer to best cell than column
+                			{
+                				newDistance = newRowDistance; // total travel distance is row distance
+                			}
+                			else if(newColumnDistance > newRowDistance) // if new column is closer to best cell than row
+                			{
+                				newDistance = newColumnDistance; // total travel distance is column distance
+                			}                			
+                			
+                			// check if this cell is closer to best cell than last cell
+                			if(newDistance < startingDistance) // if this cell puts this animal closer to best cell
+                			{
+                				// set new cell to this cell
+                				newRow = i;
+                				newColumn = j;
+                				startingDistance = newDistance; // update best distance
+                			}
+                			               			
+                		}
                 	}
+                	
+                	System.out.println(name+" is trying to escape a "+otherType+" by heading to cell: "+bestRow+", "+bestColumn);
+                	
+
+                	
+                	// move to cell furthest from danger
+                	animals.get(iD).setRow(newRow);
+                	animals.get(iD).setColumn(newColumn);
            		
             	}
             	else if(danger == false && hunt == true) // if animal sees prey and is not in danger*************************************************************************************************************
@@ -446,33 +496,27 @@ public class ExperimentTest
                 		for(int j = moveW; j <= moveE; j++)
                 		{      			              			
                 			int newRowDistance = Math.abs(i - otherRow);
-                			int newColumnDistance = Math.abs(j - otherColumn);               			
-                			int newDistance = 0;
-                			if(newRowDistance > newColumnDistance)
+                			int newColumnDistance = Math.abs(j - otherColumn);
+                			int newDistance = newRowDistance;
+                			
+                			if(newRowDistance > newColumnDistance) // if other is further away along row than column from this cell
                 			{
-                				newDistance = newRowDistance;
+                				newDistance = newRowDistance; // total travel distance is row distance
                 			}
-                			else if(newColumnDistance > newRowDistance)
+                			else if(newColumnDistance > newRowDistance) // if other is further away along column than row from this cell
                 			{
-                				newDistance = newColumnDistance;
-                			}
-                			else
+                				newDistance = newColumnDistance; // total travel distance is column distance
+                			}                			
+                			
+                			// check if this cell is a better location than previous best location
+                			if(newDistance <= bestDistance) // if this cell puts this animal closer to other animal than previous cell
                 			{
-                				newDistance = newRowDistance;
+                				// set new cell to this cell
+                				newRow = i;
+                				newColumn = j;               				
                 			}
                 			
-                			if(newDistance < otherDistance) // if new cell puts this animal closer to other animal
-                			{
-                				// move to the new cell
-                				animals.get(iD).setRow(i);
-                				animals.get(iD).setColumn(j);
-                				System.out.println(name+" will move to cell: "+i+", "+j+" and will kill the "+otherType+" present");
-                				if(animals.get(preyID).getRow() == i && animals.get(preyID).getColumn() == j) // if prey is on new cell
-                				{
-                					animals.get(preyID).setHealth(0); // kill prey
-                				}
-                				break outerloop;
-                			}
+
                 		}	    				   				
                 	}
                 	
@@ -481,7 +525,9 @@ public class ExperimentTest
             	{
             		System.out.println(name+" unaware of any prey or predators");
             	}
-      	
+            	
+            	
+
       	
             	// end of this animals turn***********************************************************************************************************************************************************************
             	// press enter to continue

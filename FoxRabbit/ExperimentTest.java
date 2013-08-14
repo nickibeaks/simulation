@@ -186,31 +186,31 @@ public class ExperimentTest
             	int numNeutral = 0;
             	boolean hunt = false;
             	boolean danger = false;
-            	// ************************************************************************otherID*********************************************************************************************************************
+            	// *********************************************************************************************************************************************************************************************
             	
             	// this animals visual perimeters**************************************************************************************************************************************************************
-            	int perimeterN = row - sight; // furthest cell this animal can see to the north
-            	if(perimeterN < 0)
+            	int perimeterN = row - sight; // furthest row this animal can see to the north
+            	if(perimeterN < 0) // if furthest row is outside game board
             	{
-            		perimeterN = 0;
+            		perimeterN = 0; // set perimeter to last row within game board in that direction
             	}
             	
-            	int perimeterS = row + sight; // furthest cell this animal can see to the south
-            	if(perimeterS > totalRows-1)
+            	int perimeterS = row + sight; // furthest row this animal can see to the south
+            	if(perimeterS > totalRows-1) // if furthest row is outside game board
             	{
-            		perimeterS = totalRows-1;
+            		perimeterS = totalRows-1; // set perimeter to last row within game board in that direction
             	}
             	
-            	int perimeterW = column - sight; // furtherst cell this animal can see to the west
-            	if(perimeterW < 0)
+            	int perimeterW = column - sight; // furtherst column this animal can see to the west
+            	if(perimeterW < 0) // if furthest column is outside game board 
             	{
-            		perimeterW = 0;
+            		perimeterW = 0; // set perimeter to last row within game board in that direction
             	}
             	
-            	int perimeterE = column + sight; // furtherst cell this animal can see to the east
-            	if(perimeterE > totalColumns-1)
+            	int perimeterE = column + sight; // furthest column this animal can see to the east
+            	if(perimeterE > totalColumns-1) // if furthest column is outside game board
             	{
-            		perimeterE = totalColumns-1;
+            		perimeterE = totalColumns-1; // set perimeter to last row within game board in that direction
             	}
             	
             	// number of cells this animal can see in each direction
@@ -349,10 +349,11 @@ public class ExperimentTest
             		}
             	}
             	
-            	// this animals action
+
+            	// chase and evade algorithms
             	if(danger == true) // if animal is in danger************************************************************************************************************************************************
             	{
-            		// try to get out of danger
+            		// evade
             		// closest predator info
             		otherCls = animals.get(predatorID).getClass(); // class of other
             		otherType = otherCls.getName(); // type of other
@@ -397,18 +398,24 @@ public class ExperimentTest
                 			// check if this cell is closer to best cell than last cell
                 			if(newDistance > bestDistance) // if this cell puts this animal further from predator
                 			{
-                				// set new cell to this cell
-                				newRow = i;
-                				newColumn = j;
-                				bestDistance = newDistance; // update best distance
-                			}
-                			               			
+                				if(board[i][j] != null) // if there is an animal currently on potential move cell
+                				{
+                					// do nothing
+                				}
+                				else
+                				{
+                    				// set new cell to this cell
+                    				newRow = i;
+                    				newColumn = j;
+                    				bestDistance = newDistance; // update best distance
+                				}
+                				
+                			}                			               			
                 		}
                 	}
                 	
                 	System.out.println(name+" is trying to escape a "+otherType+" by heading to cell: "+bestRow+", "+bestColumn);
                 	
-
                 	
                 	// move to cell furthest from danger
                 	animals.get(iD).setRow(newRow);
@@ -466,10 +473,24 @@ public class ExperimentTest
                 			// check if this cell is a better location than previous best location
                 			if(newDistance <= bestDistance) // if this cell puts this animal closer to other animal than previous cell
                 			{
-                				// set new cell to this cell
-                				newRow = i;
-                				newColumn = j;
-                				bestDistance = newDistance; // update best distance
+                				if(board[i][j] != null) // if there is an animal currently on potential move cell
+                				{
+                					if(board[i][j] == animals.get(preyID)) // if animal on potential move cell is prey
+                					{
+                						animals.get(preyID).setHealth(0); // kill prey
+                        				// set new cell to this cell
+                        				newRow = i;
+                        				newColumn = j;
+                        				bestDistance = newDistance; // update best distance
+                					}
+                				}
+                				else
+                				{
+                    				// set new cell to this cell
+                    				newRow = i;
+                    				newColumn = j;
+                    				bestDistance = newDistance; // update best distance
+                				}
                 			}
                 			
 
@@ -485,6 +506,7 @@ public class ExperimentTest
             	{
             		System.out.println(name+" unaware of any prey or predators");
             	}
+
             	
             	
 

@@ -34,7 +34,7 @@ public class ExperimentTest
     		
     	// simulation utilities
     	Random randomNum = new Random(); // random number generator for general use across simulation
-        Scanner input = new Scanner(System.in); // user input for step forward in simulation
+        Scanner input = new Scanner(System.in); // user input for general use across simulation
         ArrayList<Animal> animals = new ArrayList<Animal>(); // memory for all animals in the system
         int numAnimals = 0; // counter for the total number of animals in the system
         int numRabbits = 0; // counter for number of rabbits in the system
@@ -96,16 +96,16 @@ public class ExperimentTest
         	}
         	// **************************************************************************************************************************************************************************************************
         	
-        	// place animals on the board using their stored co-ord attributes***********************************************************************************************************************************
-        	for(int i = 0; i < animals.size(); i++)
+        	// place animals on the animal board using their stored co-ord attributes***********************************************************************************************************************************
+        	for(int i = 0; i < animals.size(); i++) // for all animals
         	{
-        		if(animals.get(i).getHealth() > 0) // if animal is alive
+        		if(animals.get(i).getHealth() > 0) // check if animal is alive
         		{
-            		board[animals.get(i).getRow()][animals.get(i).getColumn()] = animals.get(i); // place animal on game board at configured animal co-ords
+            		board[animals.get(i).getRow()][animals.get(i).getColumn()] = animals.get(i); // place animal on board at configured animal co-ords
         		}
         		else
         		{
-        			board[animals.get(i).getRow()][animals.get(i).getColumn()] = null;
+        			board[animals.get(i).getRow()][animals.get(i).getColumn()] = null; // don't place on board
         		}
         	}     	
         	// **************************************************************************************************************************************************************************************************
@@ -121,13 +121,13 @@ public class ExperimentTest
             {
                 for(int j = 0; j < board[0].length; j++) // for the number of columns on the game board
                 {
-                    if(board[i][j] == null)
+                    if(board[i][j] == null) // if no animal is present
                     {
-                        System.out.print("|  |"); // print blank space if no object is present
+                        System.out.print("|  |"); // print blank cell
                     }
-                    else
+                    else // if animal is present
                     {
-                        System.out.print("|"+board[i][j].getName()+"|"); // if there is an object in the cell, print out the name of the object
+                        System.out.print("|"+board[i][j].getName()+"|"); // print out the name of the animal in cell
                     }
                 }
                 System.out.println();                
@@ -141,11 +141,11 @@ public class ExperimentTest
             
             // begin animal turn
             // for each animal, assess its situation and make decisions
-            for(int iD = 0; iD < animals.size(); iD++)
+            for(int iD = 0; iD < animals.size(); iD++) // for all animals
             {
        
             	// this animals' brain
-            	// this animals self awareness*********************************************************************************************************************************************************************
+            	// this animals information*********************************************************************************************************************************************************************
             	String name = new String(animals.get(iD).getName()); // name of this
             	Class cls = animals.get(iD).getClass(); // class info of this
             	String type = new String(cls.getName()); // class name of this
@@ -159,7 +159,7 @@ public class ExperimentTest
             	int health = animals.get(iD).getHealth(); // health of this
             	// **********************************************************************************************************************************************************************************************
             	
-            	// short term memory of this animal**************************************************************************************************************************************************************
+            	// short term memory for this animal**************************************************************************************************************************************************************
             	int otherRow = 0; // the row of the other animal currently in focus
             	int otherColumn = 0; // the column of the other animal currently in focus
             	Class otherCls; // class info of the other animal currently in focus
@@ -171,21 +171,21 @@ public class ExperimentTest
             	int furthestDistance = 0; // if a predator is near this animal will look for the cell that gets this animal furthest from predator
             	// ***********************************************************************************************************************************************************************************************
             	
-            	// long term memory of this animal*************************************************************************************************************************************************************
+            	// long term memory for this animal*************************************************************************************************************************************************************
             	int closestPrey = ((sight*2)+1); // closest prey to this animal
             	int closestPredator = ((sight*2)+1); // closest predator to this animal
-            	int preyID = 0; 
-            	int predatorID = 0; 
-            	int[] prey = new int[10];
-            	int[] predators = new int[10];
-            	int[] friends = new int[10];
-            	int[] neutral = new int[10];
-            	int numPrey = 0;
-            	int numPredators = 0;
-            	int numFriends = 0;
-            	int numNeutral = 0;
-            	boolean hunt = false;
-            	boolean danger = false;
+            	int preyID = 0; // prey ID of other animal
+            	int predatorID = 0; // predator ID of other animal
+            	int[] prey = new int[10]; // storage for all prey within sight of this animal
+            	int[] predators = new int[10]; // storage for all predators within sight within sight of this animal
+            	int[] friends = new int[10]; // storage for all friends within sight of this animal
+            	int[] undefined = new int[10]; // storage for all undefined animals within sight within sight of this animal
+            	int numPrey = 0; // counter for the number of prey within sight of this animal
+            	int numPredators = 0; // counter for the number of predators within sight of this animal
+            	int numFriends = 0; // counter for the number of friends within sight of this animal
+            	int numUndefined = 0; // counter for the number of undefined animals within sight of this animal 
+            	boolean hunt = false; // binary decision for this animal to hunt or not
+            	boolean danger = false; // binary decision declaring this animal in danger or not
             	// *********************************************************************************************************************************************************************************************
             	
             	// this animals visual perimeters**************************************************************************************************************************************************************
@@ -223,27 +223,27 @@ public class ExperimentTest
             	
             	// this animals movement perimeters**************************************************************************************************************************************************************
             	int moveN = row - 1; // furthest cell this animal can move to the north in one step
-            	if(moveN < 0)
+            	if(moveN < 0) // if outside game board to the north
             	{
-            		moveN = 0;
+            		moveN = 0; // set movement perimeter north to 0
             	}
             	
             	int moveS = row + 1; // furthest cell this animal can can move to the south in one step
-            	if(moveS > totalRows-1)
+            	if(moveS > totalRows-1) // if outside game board to the south
             	{
-            		moveS = totalRows-1;
+            		moveS = totalRows-1; // set movement perimeter south to last row to the south
             	}
             	
             	int moveW = column - 1; // furtherst cell this animal can move to the west in one step
-            	if(moveW < 0)
+            	if(moveW < 0) // if outside game board
             	{
-            		moveW = 0;
+            		moveW = 0; // set movement perimeter west to 0
             	}
             	
             	int moveE = column + 1; // furtherst cell this animal can move to the east in one step
-            	if(moveE > totalColumns-1)
+            	if(moveE > totalColumns-1) // if outside game board
             	{
-            		moveE = totalColumns-1;
+            		moveE = totalColumns-1; // set movement perimeter east to last column to the east
             	}
          	
             	// ******************************************************************************************************************************************************************************************
@@ -253,7 +253,7 @@ public class ExperimentTest
                 // input.nextLine();
                 System.out.println();
                 
-                // this animals' self awareness
+                // print this animals' information
             	System.out.println("Type: "+type);
             	System.out.println("Name: "+name);
             	System.out.println("Health: "+health);
@@ -269,11 +269,12 @@ public class ExperimentTest
                 System.out.println();
         		        	
             	// check perimeter for other animals******************************************************************************************************************************************************
-            	for(int i = perimeterN; i <= perimeterS; i++)
+            	for(int i = perimeterN; i <= perimeterS; i++) // for sight perimeter along rows
             	{
-            		for(int j = perimeterW; j <= perimeterE; j++)
+            		for(int j = perimeterW; j <= perimeterE; j++) // for sight perimeter along columns
             		{
-            			if(board[i][j] != null)
+            			// check cells
+            			if(board[i][j] != null) // if animal present
             			{
             				// other animal info********************************************************************************************************************************************************
                         	int otherID = board[i][j].getID(); // ID
